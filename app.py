@@ -97,32 +97,55 @@ with st.spinner("Training quantum QSVC model..."):
     data["predicted_attack"] = qml_model.predict(X_scaled)
 
     st.success(f"✅ Quantum QSVC trained successfully — Test Accuracy: {score:.2f}%")
-
 # --------------------------------------------------------------------
-# 2D + 3D Visualization of 6G Quantum Security Patterns
+# 🌐 3D Quantum 6G Security Visualization (Fully Interactive)
 # --------------------------------------------------------------------
-import plotly.express as px
+import plotly.graph_objects as go
 
-st.subheader("🌐 Visualizing Quantum 6G Security Landscape")
+st.subheader("🌐 Quantum 6G Traffic Visualization (3D Interactive)")
 
-fig = px.scatter_3d(
-    data,
-    x="SNR_dB", y="latency", z="data_rate_Gbps",
-    color=data["predicted_attack"].map({0: "Normal", 1: "Attack"}),
-    size="packet_loss",
-    hover_data=["frequency_GHz", "bandwidth_GHz", "signal_strength"],
-    color_discrete_map={"Normal": "blue", "Attack": "red"},
-    title="3D View — 6G Channel & Quantum Security Classification"
-)
+# Convert labels
+data["attack_label"] = data["predicted_attack"].map({0: "Normal", 1: "Attack"})
+
+# Separate by class
+normal = data[data["attack_label"] == "Normal"]
+attack = data[data["attack_label"] == "Attack"]
+
+# Build 3D scatter plot
+fig = go.Figure()
+
+fig.add_trace(go.Scatter3d(
+    x=normal["SNR_dB"],
+    y=normal["latency"],
+    z=normal["data_rate_Gbps"],
+    mode="markers",
+    name="Normal",
+    marker=dict(size=5, color="blue", opacity=0.7, symbol="circle")
+))
+
+fig.add_trace(go.Scatter3d(
+    x=attack["SNR_dB"],
+    y=attack["latency"],
+    z=attack["data_rate_Gbps"],
+    mode="markers",
+    name="Attack",
+    marker=dict(size=6, color="red", opacity=0.8, symbol="diamond")
+))
+
 fig.update_layout(
+    title="3D Quantum 6G Traffic Behavior — Normal vs Attack",
     scene=dict(
         xaxis_title="SNR (dB)",
         yaxis_title="Latency (ms)",
         zaxis_title="Data Rate (Gbps)"
     ),
-    legend_title_text="Prediction",
-    height=500
+    scene_aspectmode="cube",
+    template="plotly_white",
+    height=700,
+    margin=dict(l=0, r=0, b=0, t=50)
 )
+
+# Force interactive 3D renderer
 st.plotly_chart(fig, use_container_width=True)
 
 # --------------------------------------------------------------------
