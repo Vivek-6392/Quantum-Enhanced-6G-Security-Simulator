@@ -64,7 +64,7 @@ with st.spinner("Training quantum model..."):
     st.success(f"✅ Quantum QSVC trained successfully — test accuracy: {score:.2f}%")
 
 # Visualization
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize=(4, 3))
 ax.scatter(data["latency"], data["packet_loss"],
            c=data["predicted_attack"], cmap="coolwarm", alpha=0.8)
 ax.set_xlabel("Latency (ms)")
